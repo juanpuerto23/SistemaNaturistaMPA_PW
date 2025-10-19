@@ -23,6 +23,9 @@
                 </h2>
             </div>
 
+            <!-- Mensaje de error/éxito -->
+            <div id="login-message" class="alert-message" style="display: none;"></div>
+
             <!-- Usuario -->
             <div class="input-group">
                 <label>Nombre Usuario</label>
@@ -58,7 +61,65 @@
             <!-- Footer -->
             <p class="footer">By continuing you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.
             </p>
+
+            <!-- Link para registro -->
+            <p class="register-link">¿No tienes cuenta? <a href="#" id="register-toggle">Regístrate aquí</a></p>
         </form>
+    </div>
+
+    <!-- Modal Registro -->
+    <div id="register-modal" class="modal">
+        <div class="modal-content register-content">
+            <span class="close" id="close-register">&times;</span>
+            <h3>Crear Nueva Cuenta</h3>
+            <form id="registerForm" class="register-form">
+                <div class="input-group">
+                    <label>Correo Electrónico</label>
+                    <div class="input-box">
+                        <i class="fa-solid fa-envelope"></i>
+                        <input type="email" id="register-email" required autocomplete="email">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Nombre Usuario</label>
+                    <div class="input-box">
+                        <i class="fa-solid fa-user"></i>
+                        <input type="text" id="register-username" required autocomplete="username">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Contraseña</label>
+                    <div class="input-box">
+                        <i class="fa-solid fa-lock"></i>
+                        <input type="password" id="register-password" required autocomplete="new-password">
+                    </div>
+                    <small class="password-hint">Mínimo 8 caracteres</small>
+                </div>
+
+                <div class="input-group">
+                    <label>Confirmar Contraseña</label>
+                    <div class="input-box">
+                        <i class="fa-solid fa-lock"></i>
+                        <input type="password" id="register-password-confirm" required autocomplete="new-password">
+                    </div>
+                </div>
+
+                <div class="role-toggle">
+                    <button type="button" class="role register-role active" data-role="employee">Employee</button>
+                    <button type="button" class="role register-role" data-role="admin">Admin</button>
+                </div>
+
+                <div id="register-message" class="alert-message" style="display: none;"></div>
+
+                <button type="submit" class="register-btn">
+                    <i class="fa-solid fa-user-plus"></i> Registrarse
+                </button>
+
+                <p class="register-footer">Al registrarse, aceptas nuestros <a href="#">Términos</a> y <a href="#">Política de Privacidad</a>.</p>
+            </form>
+        </div>
     </div>
 
     <!-- Modal Forgot Password -->
@@ -76,6 +137,7 @@
 
     <!-- JS custom -->
     <script src="js/main.js"></script>
+    <script src="js/index.js"></script>
 </body>
 
 </html>

@@ -1,0 +1,24 @@
+{
+  "name": "herbalsys-mpa",
+  "version": "1.0.0",
+  "description": "Sistema de gestión de inventario para MPA Naturalista",
+  "type": "module",
+  "main": "public/server.js",
+  "scripts": {
+    "start": "node public/server.js",
+    "dev": "nodemon public/server.js"
+  },
+  "keywords": ["pos", "inventory", "herbalsys"],
+  "author": "Juan Pablo BM",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "postgres": "^3.3.5",
+    "bcrypt": "^5.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
