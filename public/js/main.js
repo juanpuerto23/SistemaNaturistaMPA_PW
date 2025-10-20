@@ -1,4 +1,25 @@
 // =========================================
+// FUNCIÓN PARA OBTENER CSRF TOKEN
+// =========================================
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+const csrftoken = getCookie('csrftoken');
+
+// =========================================
 // FUNCIONES PARA VALIDACIÓN
 // =========================================
 
@@ -39,11 +60,13 @@ document.getElementById('loginForm').addEventListener('submit', async function (
     const role = document.querySelector('.role.active').textContent.toLowerCase();
 
     try {
-        const response = await fetch('/login', {
+        const response = await fetch('/api/auth/login/', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
             },
+            credentials: 'same-origin',
             body: JSON.stringify({
                 username: username,
                 password: password,
@@ -55,12 +78,12 @@ document.getElementById('loginForm').addEventListener('submit', async function (
 
         if (response.ok) {
             localStorage.setItem('isAuthenticated', 'true');
-            localStorage.setItem('userId', data.userId);
-            localStorage.setItem('username', data.username);
-            localStorage.setItem('userRole', data.role);
-            window.location.href = 'menu.html';
+            localStorage.setItem('userId', data.usuario.userId);
+            localStorage.setItem('username', data.usuario.username);
+            localStorage.setItem('userRole', data.usuario.role);
+            window.location.href = 'menu/';
         } else {
-            showMessage('login-message', data.message || 'Usuario o contraseña incorrectos', 'error');
+            showMessage('login-message', data.message || data.detail || 'Usuario o contraseña incorrectos', 'error');
         }
     } catch (error) {
         console.error('Error al iniciar sesión:', error);
@@ -137,16 +160,19 @@ document.getElementById('registerForm').addEventListener('submit', async functio
     }
 
     try {
-        const response = await fetch('/register', {
+        const response = await fetch('/api/auth/register/', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
             },
+            credentials: 'same-origin',
             body: JSON.stringify({
                 email: email,
                 username: username,
                 password: password,
-                role: role
+                password_confirm: passwordConfirm,
+                rol: role
             })
         });
 
@@ -166,7 +192,8 @@ document.getElementById('registerForm').addEventListener('submit', async functio
                 document.getElementById('password').value = '';
             }, 2000);
         } else {
-            showMessage('register-message', data.message || 'Error al registrar el usuario', 'error');
+            const errorMsg = data.message || data.username?.[0] || data.email?.[0] || 'Error al registrar el usuario';
+            showMessage('register-message', errorMsg, 'error');
         }
     } catch (error) {
         console.error('Error al registrar:', error);
@@ -196,3 +223,4 @@ roles.forEach(btn => {
         btn.classList.add("active");
     });
 });
+

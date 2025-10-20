@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HerbalSys | Login</title>
-    <link rel="stylesheet" href="css/styleLogin.css">
+    <link rel="stylesheet" href="/static/css/styleLogin.css">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 </head>
@@ -37,7 +37,7 @@
 
             <!-- Password -->
             <div class="input-group">
-                <label>Password</label>
+                <label>Contraseña</label>
                 <div class="input-box">
                     <i class="fa-solid fa-lock"></i>
                     <input type="password" id="password" required autocomplete="current-password">
@@ -47,19 +47,19 @@
             <!-- Role toggle -->
             <div class="role-toggle">
                 <button type="button" class="role active">Admin</button>
-                <button type="button" class="role">Employee</button>
+                <button type="button" class="role">Empleado</button>
             </div>
 
             <!-- Forgot password -->
-            <a href="#" class="forgot" id="forgot-link">Forgot password?</a>
+            <a href="#" class="forgot" id="forgot-link">¿Olvidó la contraseña?</a>
 
             <!-- Botón login -->
             <button type="submit" class="login-btn">
-                <i class="fa-solid fa-arrow-right-to-bracket"></i> Login
+                <i class="fa-solid fa-arrow-right-to-bracket"></i> Iniciar Sesión
             </button>
 
             <!-- Footer -->
-            <p class="footer">By continuing you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.
+            <p class="footer">Al continuar aceptas nuestros <a href="#">Términos</a> y <a href="#">Política de Privacidad</a>.
             </p>
 
             <!-- Link para registro -->
@@ -107,7 +107,7 @@
                 </div>
 
                 <div class="role-toggle">
-                    <button type="button" class="role register-role active" data-role="employee">Employee</button>
+                    <button type="button" class="role register-role active" data-role="employee">Empleado</button>
                     <button type="button" class="role register-role" data-role="admin">Admin</button>
                 </div>
 
@@ -136,8 +136,8 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
     <!-- JS custom -->
-    <script src="js/main.js"></script>
-    <script src="js/index.js"></script>
+    <script src="/static/js/main.js"></script>
+    <script src="/static/js/index.js"></script>
 </body>
 
 </html>
