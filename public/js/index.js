@@ -1,7 +1,12 @@
-console.log('Estoy funcionando');
+// =========================================
+// ARCHIVO PARA FUNCIONALIDADES ADICIONALES DE LA PÁGINA DE LOGIN
+// =========================================
 
-// Usa el índice idx_productos_nombre
-const productos = await ProductoService.buscarPorNombre('homeo');
+console.log('Index.js cargado correctamente');
+
+// Aquí puedes agregar funcionalidades adicionales para la página de login
+// Por ejemplo: animaciones, validaciones extra, etc.
+
 
 // Usa el índice idx_ventas_fecha  
 const ventas = await VentaService.ventasDelDia();
