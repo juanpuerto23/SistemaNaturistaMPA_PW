@@ -63,10 +63,8 @@ document.getElementById('loginForm').addEventListener('submit', async function (
         const response = await fetch('/api/auth/login/', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrftoken
+                'Content-Type': 'application/json'
             },
-            credentials: 'same-origin',
             body: JSON.stringify({
                 username: username,
                 password: password,
@@ -163,10 +161,8 @@ document.getElementById('registerForm').addEventListener('submit', async functio
         const response = await fetch('/api/auth/register/', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrftoken
+                'Content-Type': 'application/json'
             },
-            credentials: 'same-origin',
             body: JSON.stringify({
                 email: email,
                 username: username,

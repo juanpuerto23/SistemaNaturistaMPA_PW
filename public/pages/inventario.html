@@ -10,7 +10,7 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="../css/styleInventory.css">
+  <link rel="stylesheet" href="/static/css/styleInventory.css">
 </head>
 
 <body class="bg-light">
@@ -68,12 +68,12 @@
                     <input type="text" id="busquedaNombre" class="form-control" placeholder="Buscar por nombre">
                   </div>
                   <div class="col-md-3">
-                    <select class="form-select">
+                    <select id="filtroCategoria" class="form-select">
                       <option value="">Categorías</option>
                     </select>
                   </div>
                   <div class="col-md-3">
-                    <select class="form-select">
+                    <select id="filtroProveedor" class="form-select">
                       <option value="">Proveedores</option>
                     </select>
                   </div>
@@ -96,6 +96,7 @@
                         <th>Nombre</th>
                         <th>ID</th>
                         <th>Categoria</th>
+                        <th>Proveedor</th>
                         <th>Stock Actual</th>
                         <th>Fecha Vencimiento</th>
                         <th>Precio Venta</th>
@@ -173,6 +174,65 @@
     </div>
   </div>
 
+  <!-- Modal: Editar Producto -->
+  <div class="modal fade" id="modalEditar" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Editar Producto</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="editForm" onsubmit="return false;">
+            <input type="hidden" id="edit_id_original">
+            <div class="row g-2">
+              <div class="col-md-6">
+                <label class="form-label">Nombre</label>
+                <input id="edit_name" class="form-control" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">ID</label>
+                <input id="edit_sku" class="form-control" required readonly>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Categoria</label>
+                <select id="edit_category" class="form-select"></select>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Stock</label>
+                <input id="edit_stock" type="number" class="form-control" min="0">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Fecha Vencimiento</label>
+                <input id="edit_exp" type="date" class="form-control" required>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Proveedor</label>
+                <select id="edit_supplier" class="form-select" required></select>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Precio Venta</label>
+                <input id="edit_pv" type="number" class="form-control" min="0">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Precio Compra</label>
+                <input id="edit_pc" type="number" class="form-control" min="0">
+              </div>
+              <div class="col-md-12">
+                <label class="form-label">Descripción</label>
+                <input id="edit_desc" class="form-control">
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button class="btn btn-warning" id="btnActualizar">Actualizar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Script para cargar datos -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -188,6 +248,11 @@
       const selectProveedores = $('p_supplier');
       const filtroCategoria = $('filtroCategoria');
       const filtroProveedor = $('filtroProveedor');
+      
+      // Elementos del modal de edición
+      const editCategorias = $('edit_category');
+      const editProveedores = $('edit_supplier');
+      const btnActualizar = $('btnActualizar');
 
       let productos = [];
 
@@ -219,7 +284,7 @@
       // Cargar categorías (con manejo de errores)
       async function cargarCategorias() {
         try {
-          const data = await fetchJson('http://localhost:3000/categorias');
+          const data = await fetchJson('http://localhost:8000/api/categorias/');
           // si select no existe, avisar y salir
           if (!selectCategorias) {
             console.warn('selectCategorias no encontrado en el DOM');
@@ -237,6 +302,8 @@
           }
           // actualizar filtro si existe
           if (filtroCategoria) filtroCategoria.innerHTML = selectCategorias.innerHTML;
+          // actualizar select de edición
+          if (editCategorias) editCategorias.innerHTML = selectCategorias.innerHTML;
         } catch (err) {
           if (selectCategorias) selectCategorias.innerHTML = '<option value="">Error al cargar</option>';
         }
@@ -245,7 +312,7 @@
       // Cargar proveedores
       async function cargarProveedores() {
         try {
-          const data = await fetchJson('http://localhost:3000/proveedores');
+          const data = await fetchJson('http://localhost:8000/api/proveedores/');
           if (!selectProveedores) {
             console.warn('selectProveedores no encontrado en el DOM');
             return;
@@ -261,6 +328,8 @@
             selectProveedores.insertAdjacentHTML('beforeend', `<option value="">No hay proveedores</option>`);
           }
           if (filtroProveedor) filtroProveedor.innerHTML = selectProveedores.innerHTML;
+          // actualizar select de edición
+          if (editProveedores) editProveedores.innerHTML = selectProveedores.innerHTML;
         } catch (err) {
           if (selectProveedores) selectProveedores.innerHTML = '<option value="">Error al cargar</option>';
         }
@@ -269,7 +338,7 @@
       // Cargar productos
       async function cargarProductos() {
         try {
-          const data = await fetchJson('http://localhost:3000/productos');
+          const data = await fetchJson('http://localhost:8000/api/productos/');
           if (!Array.isArray(data)) {
             console.error('Respuesta de /productos no es array:', data);
             productos = [];
@@ -278,7 +347,7 @@
           }
           renderTabla(productos);
         } catch (err) {
-          tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted">No se pudo cargar productos</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted">No se pudo cargar productos</td></tr>`;
         }
       }
 
@@ -290,21 +359,24 @@
         }
         tbody.innerHTML = '';
         if (!Array.isArray(lista) || lista.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted">Sin productos</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted">Sin productos</td></tr>`;
           return;
         }
         lista.forEach(prod => {
           const nombreCat = prod.nombre_categoria ?? prod.categoria_nombre ?? '';
+          const nombreProv = prod.nombre_proveedor ?? prod.proveedor_nombre ?? '';
           tbody.insertAdjacentHTML('beforeend', `
         <tr>
           <td>${prod.nombre_producto ?? ''}</td>
           <td>${prod.id_producto ?? prod.id ?? ''}</td>
           <td>${nombreCat}</td>
+          <td>${nombreProv}</td>
           <td>${prod.stock_actual ?? 0}</td>
           <td>${prod.fecha_vencimiento ?? '-'}</td>
           <td>$${prod.precio_venta ?? 0}</td>
           <td class="text-end">
-            <button class="btn btn-sm btn-danger" data-id="${prod.id_producto ?? prod.id ?? ''}">Eliminar</button>
+            <button class="btn btn-sm btn-warning me-1" onclick="editarProducto('${prod.id_producto ?? prod.id ?? ''}')">Editar</button>
+            <button class="btn btn-sm btn-danger" onclick="eliminarProducto('${prod.id_producto ?? prod.id ?? ''}')">Eliminar</button>
           </td>
         </tr>
       `);
@@ -354,7 +426,7 @@
           };
 
           try {
-            const res = await fetch('http://localhost:3000/productos', {
+            const res = await fetch('http://localhost:8000/api/productos/', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(nuevo)
@@ -366,14 +438,10 @@
               return;
             }
             const body = await res.json().catch(() => ({}));
-            if (body.success) {
-              alert('Producto agregado correctamente ✅');
-              document.querySelector('#productForm')?.reset();
-              try { bootstrap.Modal.getInstance(document.querySelector('#modalNuevo'))?.hide(); } catch (e) { }
-              cargarProductos();
-            } else {
-              alert('Error al guardar: ' + (body.error || 'Desconocido'));
-            }
+            alert('Producto agregado correctamente ✅');
+            document.querySelector('#productForm')?.reset();
+            try { bootstrap.Modal.getInstance(document.querySelector('#modalNuevo'))?.hide(); } catch (e) { }
+            cargarProductos();
           } catch (err) {
             console.error('Error enviando nuevo producto:', err);
             alert('Error de conexión con el servidor (ver consola).');
@@ -382,6 +450,121 @@
       } else {
         console.warn('Botón Guardar no encontrado (id=btnGuardar).');
       }
+
+      // EDITAR PRODUCTO
+      window.editarProducto = async function(id) {
+        try {
+          const producto = productos.find(p => (p.id_producto ?? p.id) === id);
+          if (!producto) {
+            alert('Producto no encontrado');
+            return;
+          }
+          
+          // Llenar el formulario de edición
+          $('edit_id_original').value = id;
+          $('edit_name').value = producto.nombre_producto || '';
+          $('edit_sku').value = producto.id_producto || '';
+          $('edit_category').value = producto.id_categoria || '';
+          $('edit_stock').value = producto.stock_actual || 0;
+          $('edit_exp').value = producto.fecha_vencimiento || '';
+          $('edit_supplier').value = producto.id_proveedor || '';
+          $('edit_pv').value = producto.precio_venta || 0;
+          $('edit_pc').value = producto.precio_compra || 0;
+          $('edit_desc').value = producto.descripcion_producto || '';
+          
+          // Mostrar modal
+          const modalEditar = new bootstrap.Modal(document.getElementById('modalEditar'));
+          modalEditar.show();
+        } catch (err) {
+          console.error('Error al cargar producto para editar:', err);
+          alert('Error al cargar datos del producto');
+        }
+      };
+
+      // ACTUALIZAR PRODUCTO
+      if (btnActualizar) {
+        btnActualizar.addEventListener('click', async () => {
+          const id = $('edit_sku')?.value || $('edit_id_original')?.value;
+          const nombre = ($('edit_name')?.value || '').trim();
+          const id_categoria = parseInt($('edit_category')?.value) || null;
+          const id_proveedor = parseInt($('edit_supplier')?.value) || null;
+          const stock_actual = parseInt($('edit_stock')?.value) || 0;
+          const precio_venta = parseFloat($('edit_pv')?.value) || 0;
+          const precio_compra = parseFloat($('edit_pc')?.value) || null;
+          const fecha_vencimiento = $('edit_exp')?.value || null;
+          const descripcion_producto = ($('edit_desc')?.value || '').trim();
+
+          if (!nombre) {
+            alert('El nombre es obligatorio.');
+            return;
+          }
+          
+          if (!id) {
+            alert('ID del producto no encontrado.');
+            return;
+          }
+
+          const actualizado = {
+            id_producto: id,
+            nombre_producto: nombre,
+            id_categoria,
+            id_proveedor,
+            stock_actual,
+            precio_venta,
+            precio_compra,
+            fecha_vencimiento,
+            descripcion_producto
+          };
+
+          try {
+            const res = await fetch(`http://localhost:8000/api/productos/${id}/`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(actualizado)
+            });
+            
+            if (!res.ok) {
+              const txt = await res.text().catch(() => '');
+              console.error('PUT /productos falló', res.status, txt);
+              alert('Error al actualizar producto (ver consola).');
+              return;
+            }
+            
+            alert('Producto actualizado correctamente ✅');
+            try { bootstrap.Modal.getInstance(document.querySelector('#modalEditar'))?.hide(); } catch (e) { }
+            cargarProductos();
+          } catch (err) {
+            console.error('Error actualizando producto:', err);
+            alert('Error de conexión con el servidor (ver consola).');
+          }
+        });
+      }
+
+      // ELIMINAR PRODUCTO
+      window.eliminarProducto = async function(id) {
+        if (!confirm('¿Está seguro de eliminar este producto?')) {
+          return;
+        }
+
+        try {
+          const res = await fetch(`http://localhost:8000/api/productos/${id}/`, {
+            method: 'DELETE'
+          });
+
+          if (!res.ok) {
+            const txt = await res.text().catch(() => '');
+            console.error('DELETE /productos falló', res.status, txt);
+            alert('Error al eliminar producto (ver consola).');
+            return;
+          }
+
+          alert('Producto eliminado correctamente ✅');
+          cargarProductos();
+        } catch (err) {
+          console.error('Error eliminando producto:', err);
+          alert('Error de conexión con el servidor (ver consola).');
+        }
+      };
 
       // Inicialización: cargar todo con manejo de errores
       (async () => {

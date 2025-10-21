@@ -22,9 +22,9 @@ def obtener_ip_cliente(request):
     return ip
 
 
+@csrf_exempt
 @api_view(['POST'])
 @permission_classes([AllowAny])
-@csrf_exempt
 def registro(request):
     """
     Endpoint para registrar un nuevo usuario
@@ -51,9 +51,9 @@ def registro(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@csrf_exempt
 @api_view(['POST'])
 @permission_classes([AllowAny])
-@csrf_exempt
 def login_view(request):
     """
     Endpoint para iniciar sesión

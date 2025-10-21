@@ -12,10 +12,13 @@ import os
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/auth/', include('accounts.urls')),
+    path('api/', include('productos.urls')),
     
     # Frontend routes
     path('', TemplateView.as_view(template_name='index.html'), name='login'),
     path('menu/', TemplateView.as_view(template_name='menu.html'), name='menu'),
+    path('pages/inventario.html', TemplateView.as_view(template_name='pages/inventario.html'), name='inventario'),
+    path('pages/reportes.html', TemplateView.as_view(template_name='pages/reportes.html'), name='reportes'),
     
     # Servir archivos estáticos en desarrollo
     re_path(r'^static/(?P<path>.*)$', serve, {'document_root': settings.STATIC_ROOT}),
