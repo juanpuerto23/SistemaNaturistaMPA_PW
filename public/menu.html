@@ -141,10 +141,6 @@
                       Venta</button>
                     <button class="btn btn-outline-success btn-animate" data-action="addProduct" data-animate="pop"
                       data-bs-toggle="modal" data-bs-target="#productModal">Añadir Producto</button>
-                    <button class="btn btn-outline-secondary btn-animate" data-action="adjustStock"
-                      data-animate="pop">Ajustar Stock</button>
-                    <button class="btn btn-success btn-outline btn-animate" data-action="createPO"
-                      data-animate="pop">Crear Orden Pedido</button>
                   </div>
                 </div>
 
@@ -152,26 +148,11 @@
                 <div class="card shadow-sm mb-3">
                   <div class="card-body">
                     <div class="row g-2 align-items-center">
-                      <div class="col-md-3">
-                        <input id="productSearch" class="form-control" type="text" placeholder="Buscar Productos..."
-                          aria-label="Buscar productos">
+                      <div class="col-md-9">
+                        <input id="productSearch" type="text" class="form-control" placeholder="Buscar producto">
                       </div>
-                      <div class="col-md-3">
-                        <select id="filterCategory" class="form-select">
-                          <option value="">Todas Categorias</option>
-                          <!-- categories loaded dynamically -->
-                        </select>
-                      </div>
-                      <div class="col-md-3">
-                        <select id="filterSupplier" class="form-select">
-                          <option value="">Todos Proveedores</option>
-                          <!-- suppliers loaded dynamically -->
-                        </select>
-                      </div>
-                      <div class="col-md-2 d-flex gap-2">
+                      <div class="col-md-3 d-flex gap-2">
                         <button id="btnSearchProducts" class="btn btn-success w-100">Buscar</button>
-                        <button id="btnAddProduct" class="btn btn-outline-success w-100" data-bs-toggle="modal"
-                          data-bs-target="#productModal">Añadir Producto</button>
                       </div>
                     </div>
                   </div>
@@ -187,17 +168,14 @@
                             <th>Nombre</th>
                             <th>ID</th>
                             <th>Categoria</th>
-                            <th>Stock Actual</th>
-                            <th>Fecha Vencimiento</th>
-                            <th>Proovedor</th>
-                            <th class="text-end">Accion</th>
+                            <th>Stock</th>
+                            <th>Vencimiento</th>
+                            <th>Proveedor</th>
+                            <th class="text-end">Acciones</th>
                           </tr>
                         </thead>
                         <tbody>
-                          <!-- filas llenadas por JS -->
-                          <tr class="text-center">
-                            <td colspan="7" class="py-5 text-muted">Usar la barra de busqueda de arriba</td>
-                          </tr>
+                          <!-- llenado dinámico por menu.js -->
                         </tbody>
                       </table>
                     </div>
@@ -216,45 +194,6 @@
                     </ul>
                   </div>
                 </div>
-
-                <div class="card shadow-sm mb-3">
-                  <div class="card-body">
-                    <h6 class="card-title">Ventas / POS</h6>
-                    <div class="d-grid gap-2" id="posQuickAdd">
-                      <!-- productos populares para añadir a carrito (llenado dinámicamente) -->
-                    </div>
-                  </div>
-                </div>
-
-                <div class="card shadow-sm mb-3">
-                  <div class="card-body">
-                    <h6 class="card-title">Clientes</h6>
-                    <div class="table-responsive">
-                      <table id="clientsTable" class="table table-sm mb-0">
-                        <thead class="table-light">
-                          <tr>
-                            <th>Nombre</th>
-                            <th>Contacto</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <!-- dinámico -->
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="card shadow-sm">
-                  <div class="card-body">
-                    <h6 class="card-title">Reportes</h6>
-                    <div class="d-grid gap-2">
-                      <a href="#" class="btn btn-outline-success">Generar Reporte</a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
           </section>
 
           <!-- MODALES (ejemplo: añadir/editar producto) -->
@@ -270,40 +209,40 @@
                   <form id="productForm" onsubmit="return false;">
                     <div class="row g-2">
                       <div class="col-md-6">
-                        <label class="form-label">Nombre</label>
+                        <label for="p_name" class="form-label">Nombre</label>
                         <input id="p_name" class="form-control" required>
                       </div>
                       <div class="col-md-6">
-                        <label class="form-label">ID</label>
+                        <label for="p_sku" class="form-label">ID</label>
                         <input id="p_sku" class="form-control" required>
                       </div>
                       <div class="col-md-4">
-                        <label class="form-label">Categoria</label>
+                        <label for="p_category" class="form-label">Categoria</label>
                         <select id="p_category" class="form-select"></select>
                       </div>
                       <div class="col-md-4">
-                        <label class="form-label">Stock</label>
+                        <label for="p_stock" class="form-label">Stock</label>
                         <input id="p_stock" type="number" class="form-control" min="0">
                       </div>
                       <div class="col-md-4">
-                        <label class="form-label">Fecha Vencimiento</label>
+                        <label for="p_exp" class="form-label">Fecha Vencimiento</label>
                         <input id="p_exp" type="date" class="form-control" required>
                       </div>
                       <div class="col-md-4">
-                        <label class="form-label">Proveedor</label>
+                        <label for="p_supplier" class="form-label">Proveedor</label>
                         <select id="p_supplier" class="form-select" required></select>
                       </div>
                       <div class="col-md-4">
-                        <label class="form-label">Precio Venta</label>
-                        <input id="p_pv" type="number" class="form-control" min="0"></input>
+                        <label for="p_pv" class="form-label">Precio Venta</label>
+                        <input id="p_pv" type="number" class="form-control" min="0">
                       </div>
                       <div class="col-md-4">
-                        <label class="form-label">Precio Compra</label>
-                        <input id="p_pc" type="number" class="form-control" min="0"></input>
+                        <label for="p_pc" class="form-label">Precio Compra</label>
+                        <input id="p_pc" type="number" class="form-control" min="0">
                       </div>
                       <div class="col-md-12">
-                        <label class="form-label">Descripción</label>
-                        <input id="p_desc" class="form-control"></input>
+                        <label for="p_desc" class="form-label">Descripción</label>
+                        <input id="p_desc" class="form-control">
                       </div>
                     </div>
                   </form>

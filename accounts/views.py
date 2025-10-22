@@ -7,6 +7,8 @@ from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.utils import timezone
+from rest_framework.views import APIView
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
 
 from .models import Usuario, AuditoriaLogin
 from .serializers import RegistroSerializer, LoginSerializer, UsuarioSerializer
@@ -124,19 +126,47 @@ def login_view(request):
     return Response(serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
 
 
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def logout_view(request):
+class LogoutAPIView(APIView):
     """
-    Endpoint para cerrar sesión
-    
     POST /api/auth/logout/
+    - Soporta SessionAuthentication (cookies + CSRF) -> llama django.contrib.auth.logout(request)
+    - Soporta DRF TokenAuth ('Authorization: Token <key>') -> borra el token
+    - Soporta SimpleJWT si envías refresh token en body -> blacklist del refresh (si está configurado)
+    Devuelve 200 siempre y limpia estado del servidor.
     """
-    logout(request)
-    
-    return Response({
-        'message': 'Sesión cerrada exitosamente'
-    }, status=status.HTTP_200_OK)
+    authentication_classes = (SessionAuthentication, TokenAuthentication, BasicAuthentication)
+    permission_classes = (AllowAny,)  # permitir incluso si no hay sesión activa (limpia estado)
+
+    def post(self, request, *args, **kwargs):
+        # 1) Session logout (si hay una sesión activa)
+        try:
+            if getattr(request, "user", None) and request.user.is_authenticated:
+                logout(request)
+        except Exception:
+            # no forzar fallo por problemas con logout
+            pass
+
+        # 2) DRF Token: si Authorization: Token <key>
+        auth_header = request.META.get("HTTP_AUTHORIZATION", "")
+        if DRFToken and auth_header.startswith("Token "):
+            token_key = auth_header.split(" ", 1)[1].strip()
+            try:
+                DRFToken.objects.filter(key=token_key).delete()
+            except Exception:
+                pass
+
+        # 3) SimpleJWT: si envían refresh token en body podemos invalidarlo (blacklist)
+        # cliente puede enviar { "refresh": "<refresh_token>" }
+        if RefreshToken:
+            refresh_token = request.data.get("refresh") or request.data.get("refresh_token")
+            if refresh_token:
+                try:
+                    RefreshToken(refresh_token).blacklist()
+                except Exception:
+                    # ignorar si no está habilitado el blacklist o token inválido
+                    pass
+
+        return Response({"detail": "Sesión cerrada"}, status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])

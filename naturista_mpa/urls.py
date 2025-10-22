@@ -15,6 +15,7 @@ urlpatterns = [
     path('api/', include('productos.urls')),
     
     # Frontend routes
+    path('api/auth/', include('accounts.urls')),
     path('', TemplateView.as_view(template_name='index.html'), name='login'),
     path('menu/', TemplateView.as_view(template_name='menu.html'), name='menu'),
     path('pages/inventario.html', TemplateView.as_view(template_name='pages/inventario.html'), name='inventario'),

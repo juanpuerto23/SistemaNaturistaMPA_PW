@@ -78,7 +78,7 @@
                     </select>
                   </div>
                   <div class="col-md-2">
-                    <button class="btn btn-success w-100">Buscar</button>
+                    <button id="btnBuscar" type="button" class="btn btn-success w-100">Buscar</button>
                   </div>
                 </div>
               </div>
@@ -244,6 +244,7 @@
       const tbody = document.querySelector('#tabla-productos tbody');
       const inputBusqueda = $('busquedaNombre');
       const btnGuardar = $('btnGuardar');
+      const btnBuscar = $('btnBuscar');
       const selectCategorias = $('p_category');
       const selectProveedores = $('p_supplier');
       const filtroCategoria = $('filtroCategoria');
@@ -255,6 +256,7 @@
       const btnActualizar = $('btnActualizar');
 
       let productos = [];
+      let currentFilters = {}; // mantiene filtros usados en la última búsqueda
 
       // fetch seguro que revisa status y JSON
       async function fetchJson(url) {
@@ -335,10 +337,20 @@
         }
       }
 
-      // Cargar productos
-      async function cargarProductos() {
+      // Cargar productos (ahora con soporte de filtros)
+      async function cargarProductos(filters = null) {
         try {
-          const data = await fetchJson('http://localhost:8000/api/productos/');
+          // si pasan filtros, los guardamos como actuales
+          if (filters) currentFilters = filters;
+
+          // construir query string desde currentFilters
+          const params = new URLSearchParams();
+          if (currentFilters.search) params.set('search', currentFilters.search);
+          if (currentFilters.category) params.set('category', currentFilters.category);
+          if (currentFilters.supplier) params.set('supplier', currentFilters.supplier);
+
+          const url = 'http://localhost:8000/api/productos/' + (params.toString() ? `?${params.toString()}` : '');
+          const data = await fetchJson(url);
           if (!Array.isArray(data)) {
             console.error('Respuesta de /productos no es array:', data);
             productos = [];
@@ -350,7 +362,7 @@
           tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted">No se pudo cargar productos</td></tr>`;
         }
       }
-
+      
       // Render tabla
       function renderTabla(lista) {
         if (!tbody) {
@@ -565,6 +577,16 @@
           alert('Error de conexión con el servidor (ver consola).');
         }
       };
+
+      // Botón Buscar: armar filtros y recargar tabla
+      if (btnBuscar) {
+        btnBuscar.addEventListener('click', () => {
+          const search = (inputBusqueda?.value || '').trim();
+          const category = filtroCategoria?.value || '';
+          const supplier = filtroProveedor?.value || '';
+          cargarProductos({ search, category, supplier });
+        });
+      }
 
       // Inicialización: cargar todo con manejo de errores
       (async () => {
