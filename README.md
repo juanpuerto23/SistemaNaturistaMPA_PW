@@ -175,6 +175,7 @@ python manage.py collectstatic
 ## Autor
 
 Juan Pablo Ballesteros Macías - UIS
+Juan Sebastián Puerto Sánchez - UIS
 
 ## Licencia
 
