@@ -114,19 +114,27 @@ body {
 
 /* Tarjetas */
 .card {
-  border-radius: 12px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border-radius: 1rem;
+  border: 1px solid #E0E0E0;
+  background-color: #FFFFFF;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
+  transition: all 0.3s ease;
 }
 
 .card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 16px rgba(27, 94, 32, 0.15);
 }
 
-.card-title {
-  font-size: 1rem;
+.app-container {
+  display: flex;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+h3, h4, h5, h6 {
+  color: #1B5E20;
   font-weight: 600;
-  color: #2E7D32;
 }
 
 /* Tablas */
@@ -174,4 +182,53 @@ body {
 .offcanvas-body .nav-link.active {
   background-color: #2E7D32;
   color: #fff;
+}
+
+/* Actualizar/agregar los estilos de las tarjetas métricas */
+.card-metric {
+  background: #FFFFFF;
+  border: 1px solid #E0E0E0;
+  border-radius: 1rem;
+  text-align: center;
+  padding: 1.5rem 1rem;
+  transition: all 0.3s ease;
+}
+
+.card-metric h6 {
+  color: #6C757D;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
+.card-metric .metric-value {
+  color: #2E7D32;
+  font-weight: 700;
+  font-size: 1.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.card-metric .metric-label {
+  font-size: 0.875rem;
+}
+
+.card-metric:hover {
+  background-color: #E8F5E9;
+  transform: translateY(-4px);
+  box-shadow: 0 6px 15px rgba(46, 125, 50, 0.2);
+}
+
+/* Asegurarse de que las animaciones estén presentes */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card-metric {
+  animation: fadeInUp 0.4s ease;
 }
